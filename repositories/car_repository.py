@@ -41,8 +41,8 @@ class CarRepository:
         db.session.commit()
         return car
     
-    def update_status(self, car: CarsModel, status: CarStatus):
-        """Update a car's status."""
+    def _update_status(self, car: CarsModel, status: CarStatus):
+        """Update a car's status. Internal use only."""
         car.status = status.value
         db.session.commit()
         return car
@@ -52,25 +52,25 @@ class CarRepository:
         if not car:
             return None
         """Set car status to AVAILABLE."""
-        return self.update_status(car, CarStatus.AVAILABLE)
+        return self._update_status(car, CarStatus.AVAILABLE)
     
     def set_in_use(self, car_id):
         car = self.get_by_id(car_id)
         if not car:
             return None
         """Set car status to IN_USE."""
-        return self.update_status(car, CarStatus.IN_USE)
+        return self._update_status(car, CarStatus.IN_USE)
     
     def set_under_maintenance(self, car_id):
         car = self.get_by_id(car_id)
         if not car:
             return None
         """Set car status to UNDER_MAINTENANCE."""
-        return self.update_status(car, CarStatus.UNDER_MAINTENANCE)
+        return self._update_status(car, CarStatus.UNDER_MAINTENANCE)
     
     # Managing vehicles: Delete
-    def delete(self, car):
-        """Delete a car."""
+    def _delete(self, car):
+        """Delete a car. Internal use only."""
         db.session.delete(car)
         db.session.commit()
     
@@ -78,7 +78,7 @@ class CarRepository:
         """Delete a car by ID."""
         car = self.get_by_id(car_id)
         if car:
-            self.delete(car)
+            self._delete(car)
             return True
         return False
 

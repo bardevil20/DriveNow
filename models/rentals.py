@@ -11,6 +11,8 @@ class Rentals(db.Model):
     customer_name = db.Column(db.String(100), nullable=False)
     start_date = db.Column(db.DateTime, nullable=False)
     end_date = db.Column(db.DateTime, nullable=False)
+    completed = db.Column(db.Boolean, default=False)
+    completed_at = db.Column(db.DateTime, nullable=True)
     created_at = db.Column(db.DateTime, default=datetime.timezone.utc)
     
     car = db.relationship('Cars', backref='rentals')
@@ -25,5 +27,7 @@ class Rentals(db.Model):
             'customer_name': self.customer_name,
             'start_date': self.start_date.isoformat() if self.start_date else None,
             'end_date': self.end_date.isoformat() if self.end_date else None,
+            'completed': self.completed,
+            'completed_at': self.completed_at.isoformat() if self.completed_at else None,
             'created_at': self.created_at.isoformat() if self.created_at else None,
         }
