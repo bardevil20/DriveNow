@@ -75,8 +75,20 @@ class CarService:
         
         if not model or not year:
             return None, "Model and year are required"
+
+        if not self._is_valid_year(year):
+            return None, "Invalid year number"
+        
+        if self._is_model_and_year_exists(model, year):
+            return None, "Model and year already exists"
         
         car = self.repo.create(model, year)
         logger.info(f"Created car: {car.id}")
         return car.to_dict(), None
+    
+    def _is_valid_year(self, year):
+        return year.isdigit() and len(year) == 4 and int(year) > 1900
+
+    def _is_model_and_year_exists(self, model, year):
+        return self.repo.exists_by_model_and_year(model, year)
     

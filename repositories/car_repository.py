@@ -1,5 +1,6 @@
 """Car repository - handles all database operations for cars."""
 
+from sqlalchemy import exists
 from models import db, Cars as CarsModel, CarStatus
 
 
@@ -25,6 +26,16 @@ class CarRepository:
         """Get all cars by year."""
         return CarsModel.query.filter_by(year=year).all()
     
+    def exists_by_model_and_year(self, model, year):
+        """Check if a car with the given model and year exists."""
+        return db.session.query(
+            exists().where(CarsModel.model == model).where(CarsModel.year == year)
+        ).scalar()
+    
+    def get_by_model_and_year(self, model, year):
+        """Get a car by model and year."""
+        return CarsModel.query.filter_by(model=model, year=year).first()
+    
     # Managing vehicles: Add
     def create(self, model, year, status=None):
         """Add a new car."""
@@ -40,24 +51,24 @@ class CarRepository:
         return car
     
     def set_available(self, car_id):
+        """Set car status to AVAILABLE."""
         car = self.get_by_id(car_id)
         if not car:
             return None
-        """Set car status to AVAILABLE."""
         return self._update_status(car, CarStatus.AVAILABLE)
     
     def set_in_use(self, car_id):
+        """Set car status to IN_USE."""
         car = self.get_by_id(car_id)
         if not car:
             return None
-        """Set car status to IN_USE."""
         return self._update_status(car, CarStatus.IN_USE)
     
     def set_under_maintenance(self, car_id):
+        """Set car status to UNDER_MAINTENANCE."""
         car = self.get_by_id(car_id)
         if not car:
             return None
-        """Set car status to UNDER_MAINTENANCE."""
         return self._update_status(car, CarStatus.UNDER_MAINTENANCE)
     
     # Managing vehicles: Delete
