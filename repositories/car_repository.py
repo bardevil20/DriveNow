@@ -14,24 +14,16 @@ class CarRepository:
         return CarsModel.query.get(car_id)
     
     def get_by_status(self, status):
-        """Get all cars with a specific status."""
+        """Get all cars with a specific status (or None for no status)."""
         return CarsModel.query.filter_by(status=status).all()
     
-    def get_available(self):
-        """Get all available cars."""
-        return CarsModel.query.filter_by(status=CarStatus.AVAILABLE).all()
+    def get_by_model(self, model):
+        """Get all cars by model name."""
+        return CarsModel.query.filter_by(model=model).all()
     
-    def get_in_use(self):
-        """Get all cars currently in use."""
-        return CarsModel.query.filter_by(status=CarStatus.IN_USE).all()
-    
-    def get_under_maintenance(self):
-        """Get all cars under maintenance."""
-        return CarsModel.query.filter_by(status=CarStatus.UNDER_MAINTENANCE).all()
-    
-    def get_without_status(self):
-        """Get all cars without a status yet."""
-        return CarsModel.query.filter_by(status=None).all()
+    def get_by_year(self, year):
+        """Get all cars by year."""
+        return CarsModel.query.filter_by(year=year).all()
     
     # Managing vehicles: Add
     def create(self, model, year, status=None):
