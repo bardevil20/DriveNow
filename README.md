@@ -113,6 +113,7 @@ Car rental management REST API built with Flask using a layered architecture.
 - **Flask** - Web framework
 - **Flask-SQLAlchemy** - ORM for database operations
 - **MySQL** - Database
+- **Docker** - Containerization (optional)
 - **python-dotenv** - Environment variable management
 - **pytest** - Testing framework
 
@@ -125,6 +126,11 @@ Car rental management REST API built with Flask using a layered architecture.
 Run the entire application with one command - no need to install Python or MySQL locally.
 
 ```bash
+# Configure environment (set your password)
+copy .env.example .env  # Windows
+cp .env.example .env    # Linux/Mac
+# Edit .env and set MYSQL_PASSWORD
+
 # Start application + database
 docker-compose up -d
 
@@ -167,11 +173,12 @@ The application automatically creates the database and tables on startup if they
 
 | Variable | Default | Description |
 |----------|---------|-------------|
-| `MYSQL_HOST` | localhost | MySQL host |
+| `MYSQL_HOST` | localhost | MySQL host (use `db` for Docker) |
 | `MYSQL_PORT` | 3306 | MySQL port |
-| `MYSQL_USER` | root | MySQL username |
-| `MYSQL_PASSWORD` | - | MySQL password |
+| `MYSQL_USER` | root / drivenow | MySQL username |
+| `MYSQL_PASSWORD` | **required** | MySQL password |
 | `MYSQL_DATABASE` | drivenow | Database name |
+| `MYSQL_ROOT_PASSWORD` | root123 | MySQL root password (Docker only) |
 | `LOG_LEVEL` | INFO | Logging level |
 
 ## API Endpoints
