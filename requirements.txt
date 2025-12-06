@@ -9,3 +9,7 @@ mysql-connector-python==8.2.0
 
 # Environment variable management
 python-dotenv==1.0.0
+
+# Testing
+pytest==7.4.3
+pytest-mock==3.12.0

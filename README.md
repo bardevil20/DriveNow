@@ -30,6 +30,7 @@ Car rental management REST API built with Flask using a layered architecture.
 - **Flask-SQLAlchemy** - ORM for database operations
 - **MySQL** - Database
 - **python-dotenv** - Environment variable management
+- **pytest** - Testing framework
 
 ## Setup
 
@@ -127,6 +128,39 @@ curl http://localhost:5000/api/rentals/get_rentals
 | 201 | Created |
 | 400 | Bad request / Validation error |
 | 404 | Resource not found |
+
+## Testing
+
+```bash
+# Run all tests
+pytest
+
+# Run with verbose output
+pytest -v
+
+# Run specific test file
+pytest tests/test_car_service.py
+
+# Run specific test class
+pytest tests/test_car_service.py::TestCarServiceCreateCar
+
+# Run with coverage (requires pytest-cov)
+pytest --cov=.
+```
+
+### Test Structure
+
+```
+tests/
+├── conftest.py              # Shared fixtures
+├── test_car_service.py      # CarService unit tests
+├── test_rental_service.py   # RentalService unit tests
+├── test_car_routes.py       # Car API endpoint tests
+└── test_rental_routes.py    # Rental API endpoint tests
+```
+
+- **Service tests**: Mock repositories, test business logic
+- **Route tests**: Mock services, test HTTP status codes
 
 ## Error Response Format
 
