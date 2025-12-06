@@ -24,6 +24,90 @@ Car rental management REST API built with Flask using a layered architecture.
     └── rentals_routes.py   # Rental API endpoints
 ```
 
+### Request Flow
+
+```
+┌─────────────────────────────────────────────────────────────────────────────┐
+│                              CLIENT REQUEST                                  │
+│                          (HTTP: GET, POST, PUT, DELETE)                     │
+└─────────────────────────────────┬───────────────────────────────────────────┘
+                                  │
+                                  ▼
+┌─────────────────────────────────────────────────────────────────────────────┐
+│                              ROUTES (API)                                    │
+│  ┌─────────────────────────┐    ┌─────────────────────────────┐             │
+│  │     car_routes.py       │    │    rentals_routes.py        │             │
+│  ├─────────────────────────┤    ├─────────────────────────────┤             │
+│  │ • Parse request JSON    │    │ • Parse request JSON        │             │
+│  │ • Validate required     │    │ • Validate required         │             │
+│  │   fields exist          │    │   fields exist              │             │
+│  │ • Return HTTP response  │    │ • Return HTTP response      │             │
+│  │ • Handle exceptions     │    │ • Handle exceptions         │             │
+│  └─────────────────────────┘    └─────────────────────────────┘             │
+└─────────────────────────────────┬───────────────────────────────────────────┘
+                                  │
+                                  ▼
+┌─────────────────────────────────────────────────────────────────────────────┐
+│                              SERVICES                                        │
+│  ┌─────────────────────────┐    ┌─────────────────────────────┐             │
+│  │    car_service.py       │◄──►│    rental_service.py        │             │
+│  ├─────────────────────────┤    ├─────────────────────────────┤             │
+│  │ • Business logic        │    │ • Business logic            │             │
+│  │ • Data validation       │    │ • Data validation           │             │
+│  │ • Status management     │    │ • Date validation           │             │
+│  │ • Cross-service calls   │    │ • Car availability check    │             │
+│  │ • Raise custom errors   │    │ • Raise custom errors       │             │
+│  └─────────────────────────┘    └─────────────────────────────┘             │
+└─────────────────────────────────┬───────────────────────────────────────────┘
+                                  │
+                                  ▼
+┌─────────────────────────────────────────────────────────────────────────────┐
+│                            REPOSITORIES                                      │
+│  ┌─────────────────────────┐    ┌─────────────────────────────┐             │
+│  │  car_repository.py      │    │  rental_repository.py       │             │
+│  ├─────────────────────────┤    ├─────────────────────────────┤             │
+│  │ • CRUD operations       │    │ • CRUD operations           │             │
+│  │ • Database queries      │    │ • Database queries          │             │
+│  │ • No business logic     │    │ • No business logic         │             │
+│  └─────────────────────────┘    └─────────────────────────────┘             │
+└─────────────────────────────────┬───────────────────────────────────────────┘
+                                  │
+                                  ▼
+┌─────────────────────────────────────────────────────────────────────────────┐
+│                              MODELS                                          │
+│  ┌─────────────────────────┐    ┌─────────────────────────────┐             │
+│  │      cars.py            │    │      rentals.py             │             │
+│  ├─────────────────────────┤    ├─────────────────────────────┤             │
+│  │ • SQLAlchemy model      │    │ • SQLAlchemy model          │             │
+│  │ • CarStatus enum        │◄───│ • Foreign key to Car        │             │
+│  │ • to_dict() method      │    │ • to_dict() method          │             │
+│  └─────────────────────────┘    └─────────────────────────────┘             │
+└─────────────────────────────────┬───────────────────────────────────────────┘
+                                  │
+                                  ▼
+┌─────────────────────────────────────────────────────────────────────────────┐
+│                          MySQL DATABASE                                      │
+│  ┌─────────────────────────┐    ┌─────────────────────────────┐             │
+│  │      cars table         │    │      rentals table          │             │
+│  ├─────────────────────────┤    ├─────────────────────────────┤             │
+│  │ id (PK)                 │◄───│ car_id (FK)                 │             │
+│  │ model                   │    │ rental_id (PK)              │             │
+│  │ year                    │    │ customer_name               │             │
+│  │ status                  │    │ start_date / end_date       │             │
+│  │ created_at              │    │ completed                   │             │
+│  └─────────────────────────┘    └─────────────────────────────┘             │
+└─────────────────────────────────────────────────────────────────────────────┘
+```
+
+### Layer Responsibilities
+
+| Layer | Responsibility |
+|-------|----------------|
+| **Routes** | HTTP handling, request parsing, response formatting |
+| **Services** | Business logic, validation, cross-entity operations |
+| **Repositories** | Database CRUD operations only |
+| **Models** | Data structure definitions, ORM mapping |
+
 ## Tech Stack
 
 - **Flask** - Web framework
@@ -35,6 +119,30 @@ Car rental management REST API built with Flask using a layered architecture.
 * MySQL databes was selected because due to the relationships between rentals and cars (and assuming scaling and extending db with more tables like customers and etc. with other relationships between tables), and the constant scheme of tables - relational DB is best for this case
 
 ## Setup
+
+### Option 1: Docker (Recommended)
+
+Run the entire application with one command - no need to install Python or MySQL locally.
+
+```bash
+# Start application + database
+docker-compose up -d
+
+# View logs
+docker-compose logs -f
+
+# Stop
+docker-compose down
+
+# Stop and remove data
+docker-compose down -v
+```
+
+The app will be available at `http://localhost:5000`
+
+### Option 2: Manual Setup
+
+Requires Python and MySQL installed locally.
 
 ```bash
 # Create virtual environment
