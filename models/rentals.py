@@ -1,4 +1,4 @@
-from datetime import datetime
+from datetime import datetime, timezone
 from models import db
 
 
@@ -13,7 +13,7 @@ class Rentals(db.Model):
     end_date = db.Column(db.DateTime, nullable=False)
     completed = db.Column(db.Boolean, default=False)
     completed_at = db.Column(db.DateTime, nullable=True)
-    created_at = db.Column(db.DateTime, default=datetime.timezone.utc)
+    created_at = db.Column(db.DateTime, default=datetime.now(timezone.utc).isoformat())
     
     car = db.relationship('Cars', backref='rentals')
 
@@ -29,5 +29,5 @@ class Rentals(db.Model):
             'end_date': self.end_date.isoformat() if self.end_date else None,
             'completed': self.completed,
             'completed_at': self.completed_at.isoformat() if self.completed_at else None,
-            'created_at': self.created_at.isoformat() if self.created_at else None,
+            'created_at': self.created_at if self.created_at else None,
         }

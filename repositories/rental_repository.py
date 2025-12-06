@@ -1,14 +1,10 @@
 """Rental repository - handles all database operations for rentals."""
 
 from datetime import datetime
-from models import db, Rentals as RentalsModel, Cars as CarsModel
+from models import db, Rentals as RentalsModel
 
 
 class RentalRepository:
-    
-    def __init__(self, car_repository):
-        """Initialize with car repository for status updates."""
-        self.car_repository = car_repository
     
     def get_all(self):
         """Get all rentals."""
@@ -26,15 +22,13 @@ class RentalRepository:
         """Get all rentals for a specific customer."""
         return RentalsModel.query.filter_by(customer_name=customer_name).all()
     
-    def get_active_rentals(self):
-        """Get all active rentals (cars currently in use)."""
-        return RentalsModel.query.join(RentalsModel.car).filter(
-            CarsModel.status==CarsModel.CarStatus.IN_USE.value
-        ).all()
+    def get_active_by_car_id(self, car_id):
+        """Get active (not completed) rental for a specific car."""
+        return RentalsModel.query.filter_by(car_id=car_id, completed=False).first()
     
-    def start_rental(self, car_id, customer_name, start_date, end_date):
+    def create(self, car_id, customer_name, start_date, end_date):
         """
-        Start a new rental and set car status to IN_USE.
+        Create a new rental record.
         
         Args:
             car_id: The car ID to rent
@@ -52,13 +46,12 @@ class RentalRepository:
             end_date=end_date
         )
         db.session.add(rental)
-        self.car_repository.set_in_use(car_id)
         db.session.commit()
         return rental
     
     def complete_rental(self, rental_id):
         """
-        Complete a rental and set car status back to AVAILABLE.
+        Complete a rental.
         
         Args:
             rental_id: The rental ID to complete
@@ -71,7 +64,7 @@ class RentalRepository:
             return None
         rental.completed = True
         rental.completed_at = datetime.now()
-        self.car_repository.set_available(rental.car_id)
+        db.session.commit()
         return rental
     
     def _delete(self, rental):
@@ -83,7 +76,6 @@ class RentalRepository:
         """Delete a rental by ID."""
         rental = self.get_by_id(rental_id)
         if rental:
-            self.car_repository.set_available(rental.car_id)
             self._delete(rental)
             return True
         return False
