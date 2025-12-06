@@ -32,6 +32,8 @@ Car rental management REST API built with Flask using a layered architecture.
 - **python-dotenv** - Environment variable management
 - **pytest** - Testing framework
 
+* MySQL databes was selected because due to the relationships between rentals and cars (and assuming scaling and extending db with more tables like customers and etc. with other relationships between tables), and the constant scheme of tables - relational DB is best for this case
+
 ## Setup
 
 ```bash
